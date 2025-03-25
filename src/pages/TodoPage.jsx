@@ -2,7 +2,6 @@ import { Container, Box, Typography } from "@mui/material";
 import TodoForm from "../components/TodoForm/TodoForm";
 import TodoFilter from "../components/TodoFilter/TodoFilter";
 import TodoItem from "../components/TodoItem/TodoItem";
-//import AnimatedTodoList from "../components/styles/AnimatedTodoList";
 import { useTodo } from "../context/TodoContext";
 import SearchBar from "../components/TodoFilter/SearchBar";
 import { useTheme } from "@mui/material/styles";
@@ -45,7 +44,7 @@ const TodoPage = () => {
         <TodoForm />
       </Box>
 
-      {/* Filter Controls */}
+      {/* filter  */}
       <Box
         sx={{
           position: "sticky",
@@ -79,7 +78,7 @@ const TodoPage = () => {
         <SearchBar />
       </Box>
 
-      {/* Task List */}
+      {/* todo List */}
       <Box
         component="main"
         sx={{
@@ -156,7 +155,7 @@ const TodoPage = () => {
                   },
                 }}
               >
-                {/* <AnimatedTodoList todos={todos} /> */}
+                
                 <TodoItem todo={todo} />
               </Box>
             ))}

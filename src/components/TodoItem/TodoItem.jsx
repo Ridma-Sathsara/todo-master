@@ -1,36 +1,14 @@
 import { useState } from 'react';
-import { Checkbox, IconButton, Box, Typography, TextField } from '@mui/material';
+import { Checkbox, IconButton, Box, Typography, TextField,Stack,Paper
+} from '@mui/material';
 import { Delete, Edit, Close, Check } from '@mui/icons-material';
 import { useTodo } from '../../context/TodoContext';
-import { styled } from '@mui/system';
 
 const TodoItem = ({ todo }) => {
   const { toggleTodo, deleteTodo, editTodo } = useTodo();
   const [isEditing, setIsEditing] = useState(false);
   const [editedText, setEditedText] = useState(todo.text);
   const [error, setError] = useState(false);
-
-  const StyledTodoItem = styled(Box)(({ theme, completed }) => ({
-    display: 'flex',
-    alignItems: 'center',
-    padding: theme.spacing(1, 2),
-    margin: theme.spacing(1, 0),
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: completed
-      ? theme.palette.action.selected
-      : theme.palette.background.paper,
-    '&:hover': {
-      boxShadow: theme.shadows[2]
-    }
-  }));
-
-  const TodoText = styled(Typography)(({ completed }) => ({
-    flexGrow: 1,
-    marginLeft: '16px',
-    textDecoration: completed ? 'line-through' : 'none',
-    whiteSpace: 'pre-wrap',
-    wordBreak: 'break-word',
-  }));
 
   const handleEditStart = () => {
     setEditedText(todo.text);
@@ -42,7 +20,6 @@ const TodoItem = ({ todo }) => {
       setError(true);
       return;
     }
-    
     editTodo(todo.id, editedText.trim());
     setIsEditing(false);
     setError(false);
@@ -55,78 +32,118 @@ const TodoItem = ({ todo }) => {
   };
 
   return (
-    <StyledTodoItem completed={todo.completed}>
-      <Checkbox
-        checked={todo.completed}
-        onChange={() => toggleTodo(todo.id)}
-        color="primary"
-        disabled={isEditing}
-      />
-
-      {isEditing ? (
-        <TextField
-          fullWidth
-          variant="standard"
-          value={editedText}
-          onChange={(e) => {
-            setEditedText(e.target.value);
-            setError(false);
+    <Paper
+      elevation={2}
+      sx={{
+        p: 2,
+        mb: 2,
+        borderRadius: 2,
+        borderLeft: `4px solid ${todo.completed ? '#4caf50' : '#2196f3'}`,
+        transition: 'all 0.3s ease',
+        '&:hover': {
+          transform: 'translateY(-2px)',
+          boxShadow: 3
+        }
+      }}
+    >
+      <Stack direction="row" alignItems="center" spacing={2}>
+        <Checkbox
+          checked={todo.completed}
+          onChange={() => toggleTodo(todo.id)}
+          color="primary"
+          sx={{
+            '& .MuiSvgIcon-root': { fontSize: 28 }
           }}
-          autoFocus
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') handleSave();
-            if (e.key === 'Escape') handleCancel();
-          }}
-          sx={{ mx: 2 }}
-          error={error}
-          helperText={error ? "Task cannot be empty" : ""}
         />
-      ) : (
-        <TodoText completed={todo.completed}>{todo.text}</TodoText>
-      )}
 
-      <Box sx={{ display: 'flex', gap: 1 }}>
-        {isEditing ? (
-          <>
-            <IconButton
-              aria-label="save"
-              onClick={handleSave}
-              color="primary"
-              size="small"
+        <Box sx={{ flexGrow: 1 }}>
+          {isEditing ? (
+            <TextField
+              fullWidth
+              variant="outlined"
+              value={editedText}
+              onChange={(e) => setEditedText(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleSave();
+                if (e.key === 'Escape') handleCancel();
+              }}
+              autoFocus
+              error={error}
+              helperText={error ? "Task cannot be empty" : ""}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 1
+                }
+              }}
+            />
+          ) : (
+            <Typography
+              variant="body1"
+              sx={{
+                textDecoration: todo.completed ? 'line-through' : 'none',
+                color: todo.completed ? 'text.secondary' : 'text.primary',
+                fontWeight: todo.completed ? 400 : 500,
+                wordBreak: 'break-word'
+              }}
             >
-              <Check fontSize="small" />
-            </IconButton>
-            <IconButton
-              aria-label="cancel"
-              onClick={handleCancel}
-              color="secondary"
-              size="small"
-            >
-              <Close fontSize="small" />
-            </IconButton>
-          </>
-        ) : (
-          <>
-            <IconButton
-              aria-label="edit"
-              onClick={handleEditStart}
-              color="primary"
-              size="small"
-            >
-              <Edit fontSize="small" />
-            </IconButton>
-            <IconButton
-              aria-label="delete"
-              onClick={() => deleteTodo(todo.id)}
-              color="error"
-              size="small"
-            >
-              <Delete fontSize="small" />
-            </IconButton>
-          </>
-        )}
-      </Box>
-    </StyledTodoItem>
+              {todo.text}
+            </Typography>
+          )}
+        </Box>
+
+        <Stack direction="row" spacing={1}>
+          {isEditing ? (
+            <>
+              <IconButton 
+                onClick={handleSave} 
+                color="success"
+                size="medium"
+              >
+                <Check />
+              </IconButton>
+              <IconButton 
+                onClick={handleCancel} 
+                color="error"
+                size="medium"
+              >
+                <Close />
+              </IconButton>
+            </>
+          ) : (
+            <>
+              <IconButton 
+                onClick={handleEditStart} 
+                color="primary"
+                size="medium"
+              >
+                <Edit />
+              </IconButton>
+              <IconButton 
+                onClick={() => deleteTodo(todo.id)} 
+                color="error"
+                size="medium"
+              >
+                <Delete />
+              </IconButton>
+            </>
+          )}
+        </Stack>
+      </Stack>
+
+      {todo.completed && !isEditing && (
+        <Typography 
+          variant="caption" 
+          sx={{
+            display: 'block',
+            mt: 1,
+            color: 'success.main',
+            fontStyle: 'italic'
+          }}
+        >
+          Completed
+        </Typography>
+      )}
+    </Paper>
   );
 };
 
